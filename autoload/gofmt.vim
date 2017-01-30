@@ -11,10 +11,11 @@ function! gofmt#fmt(formatters) abort
   if empty(a:formatters)
     return
   endif
-  for i in range(len(a:formatters)-1)
-    let a:formatters[i].next = a:formatters[i+1]
+  let fmts = deepcopy(a:formatters)
+  for i in range(len(fmts)-1)
+    let fmts[i].next = fmts[i+1]
   endfor
-  call s:fmt(a:formatters[0])
+  call s:fmt(fmts[0])
 endfunction
 
 function! s:fmt(formatter) abort
