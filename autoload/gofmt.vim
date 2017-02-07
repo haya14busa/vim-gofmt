@@ -44,7 +44,15 @@ function! s:handler.new() abort
   return deepcopy(s:handler)
 endfunction
 
-function! s:handler.on_exit(job, exit_status) abort
+function! s:handler.on_exit(...) abort
+  try
+    call call(self._on_exit, a:000, self)
+  finally
+    call delete(self.tmpfile)
+  endtry
+endfunction
+
+function! s:handler._on_exit(job, exit_status) abort
   if a:exit_status
     echom printf('gofmt: cmd=%s exit_status=%s', self.formatter.cmd, a:exit_status)
     return
@@ -59,7 +67,6 @@ function! s:handler.on_exit(job, exit_status) abort
   :% delete
   call setline(1, readfile(self.tmpfile))
   call winrestview(self.winsaveview)
-  call delete(self.tmpfile)
   if has_key(self.formatter, 'next')
     call s:fmt(self.formatter.next)
   endif
