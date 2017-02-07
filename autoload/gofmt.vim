@@ -29,6 +29,7 @@ function! s:fmt(formatter) abort
   let handler.changedtick = b:changedtick
   let handler.winsaveview = winsaveview()
   let handler.tmpfile = tmpfile
+  let handler.bufnr = bufnr('%')
 
   let cmd = [a:formatter.cmd] + a:formatter.args + [tmpfile]
   call job_start(cmd, {
@@ -46,6 +47,10 @@ endfunction
 function! s:handler.on_exit(job, exit_status) abort
   if a:exit_status
     echom printf('gofmt: cmd=%s exit_status=%s', self.formatter.cmd, a:exit_status)
+    return
+  endif
+  " Do not overwrite buffer content when bufnr is different.
+  if self.bufnr != bufnr('%')
     return
   endif
   if b:changedtick != self.changedtick
