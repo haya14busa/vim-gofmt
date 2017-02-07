@@ -64,8 +64,13 @@ function! s:handler._on_exit(job, exit_status) abort
   if b:changedtick != self.changedtick
     return s:fmt(self.formatter)
   endif
-  :silent % delete
-  call setline(1, readfile(self.tmpfile))
+  silent! undojoin
+  let lines = readfile(self.tmpfile)
+  call setline(1, lines)
+  " execute 'silent' len(lines)+1,$ delete
+  if line('$') > len(lines)
+    execute printf('silent %d,$ delete', len(lines)+1)
+  endif
   call winrestview(self.winsaveview)
   if has_key(self.formatter, 'next')
     call s:fmt(self.formatter.next)
