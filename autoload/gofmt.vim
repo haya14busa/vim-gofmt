@@ -64,7 +64,7 @@ function! s:handler._on_exit(job, exit_status) abort
   if b:changedtick != self.changedtick
     return s:fmt(self.formatter)
   endif
-  :% delete
+  :silent % delete
   call setline(1, readfile(self.tmpfile))
   call winrestview(self.winsaveview)
   if has_key(self.formatter, 'next')
