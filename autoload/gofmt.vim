@@ -74,6 +74,14 @@ function! s:handler._on_exit(job, exit_status) abort
   call winrestview(self.winsaveview)
   if has_key(self.formatter, 'next')
     call s:fmt(self.formatter.next)
+  else
+    let eventignore_save = &eventignore
+    set eventignore=BufWritePre
+    try
+      silent update
+    finally
+      let &eventignore = eventignore_save
+    endtry
   endif
 endfunction
 
